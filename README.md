@@ -6,4 +6,6 @@
 
 <a href="https://www.oreilly.com/library/view/python-for-data/9781098104023/"><img src="https://learning.oreilly.com/library/cover/9781098104023/250w/"></a>
 
-Contributor(s): Stephen CUI
+## Contributors
+
+- [Stephen CUI](https://github.com/JPL-JUNO)
