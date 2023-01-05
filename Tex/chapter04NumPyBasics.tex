@@ -9,7 +9,111 @@ Here are some of the things you’ll find in NumPy:
     \item Linear algebra, random number generation, and Fourier transform capabilities
     \item A C API for connecting NumPy with libraries written in C, C++, or FORTRAN
 \end{itemize}
+
+For most data analysis applications, the main areas of functionality I’ll focus on are:
+
+\begin{itemize}
+    \item Fast array-based operations for data munging and cleaning, subsetting and filtering, transformation, and any other kind of computation
+    \item Common array algorithms like sorting, unique, and set operations
+    \item Efficient descriptive statistics and aggregating/summarizing data
+    \item Data alignment and relational data manipulations for merging and joining heterogeneous datasets
+    \item Expressing conditional logic as array expressions instead of loops with \verb|if-elif-else| branches
+    \item Group-wise data manipulations (aggregation, transformation, and function application)
+\end{itemize}
+
+One of the reasons NumPy is so important for numerical computations in Python is because it is designed for efficiency on large arrays of data. There are a number of reasons for this:
+\begin{itemize}
+    \item NumPy internally stores data in a contiguous block of memory, independent of other built-in Python objects. NumPy’s library of algorithms written in the C language can operate on this memory without any type checking or other overhead. NumPy arrays also use much less memory than built-in Python sequences.
+    \item NumPy operations perform complex computations on entire arrays without the need for Python for loops, which can be slow for large sequences. NumPy is faster than regular Python code because its C-based algorithms avoid overhead present with regular interpreted Python code.
+\end{itemize}
+
+\begin{pyc}
+import numpy as np
+my_arr = np.arange(1_000_000)
+my_list = list(range(1_000_000))
+
+%timeit my_arr2 = my_arr * 2
+%timeit my_list2 = [x * 2 for x in my_list]
+\end{pyc}
 \section{The NumPy ndarray: A Multidimensional Array Object}
+One of the key features of NumPy is its N-dimensional array object, or ndarray, which is a fast, flexible container for large datasets in Python. Arrays enable you to perform mathematical operations on whole blocks of data using similar syntax to the equivalent operations between scalar elements.
+\begin{pyc}
+import numpy as np
+
+data = np.array([[1.5, -.1, 3], [0, -3, 6.5]])
+data * 10
+data + data
+\end{pyc}
+
+\notes{
+    In this chapter and throughout the book, I use the standard NumPy convention of always using import numpy as np. It would be possible to put from numpy import * in your code to avoid having to write np., but I advise against making a habit of this. The numpy namespace is large and contains a number of functions whose names conflict with built-in Python functions (like min and max). Following standard conventions like these is almost always a good idea.
+}
+
+An ndarray is a generic multidimensional container for homogeneous data; that is, all of the elements must be the same type. Every array has a \verb|shape|, a tuple indicating the size of each dimension, and a \verb|dtype|, an object describing the \emph{data type} of the array:
+
+\notes{
+    Whenever you see “array”, “NumPy array,” or “ndarray”, in most cases they all refer to the ndarray object.
+}
+\subsection{Creating ndarrays}
+The easiest way to create an array is to use the array function. This accepts any sequence-like object (including other arrays) and produces a new NumPy array containing the passed data.
+\begin{pyc}
+data1 = [6, 7.5, 8, 0, 1]
+arr1 = np.array(data1)
+arr1
+\end{pyc}
+
+Nested sequences, like a list of equal-length lists, will be converted into a multidimensional array:
+\begin{pyc}
+data2 = [[1, 2, 3, 4], [5, 6, 7, 8]]
+arr2 = np.array(data2)
+arr2
+\end{pyc}
+
+Unless explicitly specified (discussed in \autoref{Data Types for ndarrays}), numpy.array tries to infer a good data type for the array that it creates. The data type is stored in a special dtype metadata object.
+\begin{pyc}
+print(arr1.dtype) # float64
+print(arr2.dtype) # int32 
+\end{pyc}
+
+In addition to numpy.array, there are a number of other functions for creating new arrays. To create a higher dimensional array with these methods, pass a tuple for the shape:
+\begin{pyc}
+np.zeros(10)
+np.zeros((3, 6))
+np.empty((1, 2, 3))    
+\end{pyc}
+
+\warning{
+    It’s not safe to assume that numpy.empty will return an array of all zeros. This function returns uninitialized memory and thus may contain nonzero “garbage” values. You should use this function only if you intend to populate(填充) the new array with data.
+}
+
+\verb|numpy.arange| is an array-valued version of the built-in Python range function:
+\begin{pyc}
+np.arange(15)
+# array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14])
+\end{pyc}
+
+See \autoref{Some important NumPy array creation functions} for a short list of standard array creation functions. Since NumPy is focused on numerical computing, the data type, if not specified, will in many cases be float64 (floating point).
+
+\begin{table}
+    \caption{Some important NumPy array creation functions}
+    \label{Some important NumPy array creation functions}
+    \begin{tabularx}{\textwidth}{lX}
+        \hline
+        Function                        & Description                                                                                                                                                                                          \\
+        \hline
+        \verb|array|                    & Convert input data (list, tuple, array, or other sequence type) to an ndarray either by inferring a data
+        type or explicitly specifying a data type; copies the input data by default                                                                                                                                                            \\
+        \verb|asarray|                  & Convert input to ndarray, but do not copy if the input is already an ndarray                                                                                                                         \\
+        \verb|arange|                   & Like the built-in range but returns an ndarray instead of a list                                                                                                                                     \\
+        \verb|ones|, \verb|ones_like|   & Produce an array of all 1s with the given shape and data type; \verb|ones_like| takes another array and produces a ones array of the same shape and data type                                        \\
+        \verb|zeros|, \verb|zeros_like| & Like \verb|ones| and \verb|ones_like| but producing arrays of 0s instead                                                                                                                             \\
+        \verb|empty|, \verb|empty_like| & Create new arrays by allocating new memory, but do not populate with any values like \verb|ones| and \verb|zeros|                                                                                    \\
+        \verb|full|, \verb|full_like|   & Produce an array of the given shape and data type with all values set to the indicated “fill value”; \verb|full_like| takes another array and produces a filled array of the same shape and data type \\
+        \verb|eye|, \verb|identity|     & Create a square $N \times N$ identity matrix (1s on the diagonal and 0s elsewhere)                                                                                                                   \\
+        \hline
+    \end{tabularx}
+\end{table}
+\subsection{Data Types for ndarrays\label{Data Types for ndarrays}}
 \section{Pseudorandom Number Generation}
 \section{Universal Functions: Fast Element-Wise Array Functions}
 \section{Array-Oriented Programming with Arrays}
