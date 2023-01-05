@@ -9,6 +9,7 @@
 \setkeys{Gin}{width=0.75\textwidth}
 \usepackage{listings}
 \newtheorem{theorem}{Theorem}
+\usepackage{tabularx}
 
 
 \setminted[python]{bgcolor=orange!5, linenos, breakanywhere=true}
@@ -82,6 +83,12 @@
 \usepackage[english]{babel}
 \addto\extrasenglish{
 	\def\chapterautorefname{Chapter}
+}
+\addto\extrasenglish{
+	\def\sectionautorefname{Section}
+}
+\addto\extrasenglish{
+	\def\subsectionautorefname{Subsection}
 }
 \hypersetup{
 	colorlinks=true,
