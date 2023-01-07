@@ -203,9 +203,246 @@ There are shorthand type code strings you can also use to refer to a dtype.
     Calling astype always creates a new array (a copy of the data), even if the new data type is the same as the old data type.
 }
 
-\subsection{Arithmetic with NumPy Arrays
+\subsection{Arithmetic with NumPy Arrays}
+Arrays are important because they enable you to express batch operations on data  without writing any for loops. NumPy users call this \emph{vectorization}.
+\begin{itemize}
+    \item Any arithmetic operations between equal-size arrays apply the operation element-wise
+    \item Arithmetic operations with scalars propagate the scalar argument to each element in the array
+    \item Comparisons between arrays of the same size yield Boolean arrays
+\end{itemize}
+\begin{pyc}
+arr = np.array([[1., 2., 3.], [4., 5., 6.]])
+arr * arr
+arr - arr
+
+1 / arr
+arr ** 2
+
+arr2 = np.array([[0., 4., 1.], [7., 2., 12.]])
+arr2 > arr
+\end{pyc}
+Evaluating operations between differently sized arrays is called broadcasting and will be discussed in more detail in \nameref{Appendix A}.
+\subsection{Basic Indexing and Slicing}
+NumPy array indexing is a deep topic, as there are many ways you may want to select a subset of your data or individual elements.
+
+\begin{pyc}
+arr = np.arange(10)
+arr[5]
+# 5
+
+arr[5: 8]
+# array([5, 6, 7])
+
+arr[5: 8] = 12
+arr
+# array([ 0,  1,  2,  3,  4, 12, 12, 12,  8,  9])
+\end{pyc}
+\notes{
+    An important first distinction from Python’s built-in lists is that \textbf{array slices are views on the original array}. This means that the data is not copied, and any modifications to the view will be reflected in the source array. 
 }
-\section{Pseudorandom Number Generation}
+
+\begin{pyc}
+arr_slice = arr[5: 8]
+arr_slice
+# array([12, 12, 12])
+arr_slice[1] = 123
+arr
+# array([  0,   1,   2,   3,   4,  12, 123,  12,   8,   9])
+
+arr_slice[:] = 64
+arr
+# array([ 0,  1,  2,  3,  4, 64, 64, 64,  8,  9])
+\end{pyc}
+
+\subsubsection{Pythonn内置的列表}
+\begin{pyc}
+a = list(range(10))
+print(a)
+# [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+b = a[2: 5]
+# [2, 3, 4]
+print(b)
+b[1] = 1234
+print(b)
+# [2, 1234, 4]
+print(a)
+# [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+\end{pyc}
+
+As NumPy has been designed to be able to work with very large arrays, you could imagine performance and memory problems if NumPy insisted on always copying data.
+
+\warning{
+    If you want a copy of a slice of an ndarray instead of a view, you will need to explicitly copy the array—for example, arr[5:8].copy(). As you will see, pandas works this way, too.
+}
+
+With higher dimensional arrays, you have many more options. In a two-dimensional
+array, the elements at each index are no longer scalars but rather one-dimensional
+arrays. Thus, individual elements can be accessed recursively. But that is a bit too much
+work, so you can pass a comma-separated list of indices to select individual elements.
+
+\begin{pyc}
+arr2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+arr2d[2]
+# array([7, 8, 9])
+
+# these are equivalent:
+arr2d[0][2]
+arr2d[0, 2]
+\end{pyc}
+
+See \autoref{Indexing elements in a NumPy array} for an illustration of indexing on a two-dimensional array. I find it helpful to think of axis 0 as the “rows” of the array and axis 1 as the “columns.”
+
+\figures{Indexing elements in a NumPy array}
+
+In multidimensional arrays, if you omit later indices, the returned object will be a
+lower dimensional ndarray consisting of all the data along the higher dimensions. 
+
+\begin{pyc}
+    
+\end{pyc}
+
+Note that in all of these cases where subsections of the array have been selected, the
+returned arrays are views.
+
+\warning{
+    This multidimensional indexing syntax for NumPy arrays will not work with regular Python objects, such as lists of lists.
+}
+\subsubsection{Indexing with slices}
+Like one-dimensional objects such as Python lists, ndarrays can be sliced with the
+familiar syntax.
+
+By mixing integer indexes and slices, you get lower dimensional slices.
+
+\figures{Two-dimensional array slicing}
+
+\begin{pyc}
+lower_dim_slice = arr2d[1, :2]
+lower_dim_slice.shape
+
+arr2d[:2, 2]
+arr2d[:, :1]
+
+arr2d[:2, 1:] = 0
+arr2d
+\end{pyc}
+\subsection{Boolean Indexing}
+The Boolean array must be of the same length as the array axis it’s indexing. You can even mix and match Boolean arrays with slices or integers (or sequences of integers).
+
+\begin{pyc}
+names = np.array(["Bob", "Joe", "Will", "Bob", "Will", "Joe", "Joe"])
+print(names)
+data = np.array([[4, 7], [0, 2], [-5, 6], [0, 0], [1, 2], [-12, 4], [3, 4]])
+print(data)
+print(names == "Bob")
+print(data[names == "Bob"])
+print(data[names == "Bob", 1:])
+print(data[names == "Bob", 1])
+\end{pyc}
+
+\begin{itemize}
+    \item To select everything but "Bob" you can either use != or negate the condition using $\sim$
+    \item The $\sim$ operator can be useful when you want to invert a Boolean array referenced by a variable
+    \item To select two of the three names to combine multiple Boolean conditions, use Boolean arithmetic operators like \verb|&| (and) and \textbar (or).
+\end{itemize}
+
+\begin{pyc}
+names = np.array(["Bob", "Joe", "Will", "Bob", "Will", "Joe", "Joe"])
+names
+data = np.array([[4, 7], [0, 2], [-5, 6], [0, 0], [1, 2], [-12, 4], [3, 4]])
+data
+names == "Bob"
+data[names == "Bob"]
+data[names == "Bob", 1:]
+data[names == "Bob", 1]
+
+names != "Bob"
+~(names == "Bob")
+data[~(names == "Bob")]
+cond = names == "Bob"
+data[~cond]
+
+mask = (names == "Bob") | (names == "Will")
+data[mask]  
+\end{pyc}
+
+\textbf{Selecting data from an array by Boolean indexing and assigning the result to a new variable always creates a copy of the data}, even if the returned array is unchanged.
+
+\warning{
+    The Python keywords and and or do not work with Boolean arrays.
+Use \& (and) and \textbar (or) instead.
+}
+
+\begin{itemize}
+    \item Setting values with Boolean arrays works by substituting the value or values on the righthand side into the locations where the Boolean array’s values are True.
+    \item You can also set whole rows or columns using a one-dimensional Boolean array
+\end{itemize}
+
+\begin{pyc}
+data[data < 0] = 0
+data
+
+data[names != "Joe"] = 7
+data
+\end{pyc}
+\subsection{Fancy Indexing}
+Fancy indexing is a term adopted by NumPy to describe indexing using integer arrays.
+\begin{itemize}
+    \item To select a subset of the rows in a particular order, you can simply pass a list or
+    ndarray of integers specifying the desired order. Using negative indices selects rows from
+    the end
+    \item Passing multiple index arrays does something slightly different; it selects a one-dimensional array of elements corresponding to each tuple of indices.(返回的是一个一维的数组，这超乎了我的想象)
+\end{itemize}
+
+\begin{pyc}
+arr = np.zeros((8, 4))
+for i in range(8):
+    arr[i] = i
+arr
+
+arr[[4, 3, 0, 6]]
+
+arr[[-3, -5, -7]]
+
+arr = np.arange(32).reshape((8, 4))
+arr[[1, 5, 7, 2], [0, 3, 1, 2]]
+\end{pyc}
+
+To learn more about the reshape method, have a look at \nameref{Appendix A}. Here the elements (1, 0), (5, 3), (7, 1), and (2, 2) were selected. The result of fancy indexing with as many integer arrays as there are axes is always one-dimensional.
+
+如果你想要返回一个二维的数组，你写的索引位置应该也得是一个矩形数组，下面是一种写法：
+\begin{pyc}
+arr[[1, 5, 7, 2]][:, [0, 3, 1, 2]]
+\end{pyc}
+
+Keep in mind that fancy indexing, unlike slicing, always copies the data into a new array when assigning the result to a new variable. If you assign values with fancy indexing, the indexed values will be modified.
+
+\begin{pyc}
+a = arr[[1, 5, 7, 2], [0, 3, 1, 2]]
+a[0] = 10000
+print(a)
+print(arr)
+\end{pyc}
+\subsection{Transposing Arrays and Swapping Axes}
+Transposing is a special form of reshaping that similarly returns a view on the underlying data without copying anything.
+\begin{itemize}
+    \item Arrays have the transpose method and the special T attribute. When doing matrix computations, you may do this very often. The @ infix operator is another way to do matrix multiplication.
+    \item Simple transposing with .T is a special case of swapping axes. ndarray has the method \verb|swapaxes|, which takes a pair of axis numbers and switches the indicated axes to rearrange the data. 只返回源数据的视图，不会复制数据。
+    \item 对于高维数组，transpose需要得到一个由轴编号组成的元组才能对这些轴进行转置（费脑子，不要用图像理解）。用代数的方法理解，原本$x_{103}=11$，轴变换后$x_{310}=11$或者$(1, 0, 3)=x_{103}$，变换后$(3, 1, 0)=x_{103}$。
+\end{itemize}
+\begin{pyc}
+arr = np.arange(15).reshape((3, 5))
+arr.T
+
+arr = np.array([[0, 1, 0], [1, 2, -2], [6, 3, 2], [-1, 0, -1], [1, 0, 1]])
+np.dot(arr.T, arr)
+arr.T @ arr
+
+arr.swapaxes(0, 1)
+
+arr = np.arange(16).reshape((2, 2, 4))
+arr.transpose((2, 0, 1))
+\end{pyc}
+\section{Pseudorandom Number Generation(伪随机数生成)}
 \section{Universal Functions: Fast Element-Wise Array Functions}
 \section{Array-Oriented Programming with Arrays}
 \section{Linear Algebra}
