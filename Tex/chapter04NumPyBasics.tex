@@ -55,7 +55,7 @@ An ndarray is a generic multidimensional container for homogeneous data; that is
     Whenever you see “array”, “NumPy array,” or “ndarray”, in most cases they all refer to the ndarray object.
 }
 \subsection{Creating ndarrays}
-The easiest way to create an array is to use the array function. This accepts any sequence-like object (including other arrays) and produces a new NumPy array containing the passed data.
+The easiest way to create an array is to use the \verb|array| function. This accepts any sequence-like object (including other arrays) and produces a new NumPy array containing the passed data.
 \begin{pyc}
 data1 = [6, 7.5, 8, 0, 1]
 arr1 = np.array(data1)
@@ -122,7 +122,7 @@ print(arr1.dtype) # float64
 print(arr2.dtype) # int32
 \end{pyc}
 \notes{
-    Don’t worry about memorizing the NumPy data types, especially if you’re a new user. It’s often only necessary to care about the general kind of data you’re dealing with, whether floating point, complex, integer, Boolean, string, or general Python object. When you need more control over how data is stored in memory and on disk, especially large datasets, it is good to know that you have control over the storage type.
+    Don't worry about memorizing the NumPy data types, especially if you're a new user. It's often only necessary to care about the general kind of data you're dealing with, whether floating point, complex, integer, Boolean, string, or general Python object. When you need more control over how data is stored in memory and on disk, especially large datasets, it is good to know that you have control over the storage type.
 }
 See \autoref{NumPy data types} for a full listing of NumPy's supported data types.
 \begin{table}
@@ -143,7 +143,7 @@ See \autoref{NumPy data types} for a full listing of NumPy's supported data type
         \verb|complex64|, \verb|complex128|, \verb|complex256| & \verb|c8|, \verb|c16|, \verb|c32| & Complex numbers represented by two 32, 64, or 128 floats, respectively                                                      \\
         \verb|bool|                                            & \verb|?|                          & Boolean type storing True and False values                                                                                  \\
         \verb|object|                                          & \verb|O|                          & Python object type; a value can be any Python object                                                                        \\
-        \verb|string_|                                         & \verb|S|                          & Fixed-length ASCII string type (1 byte per character); for example, to create astring data type with length 10, use 'S10'   \\                                                                                                                          \\
+        \verb|string_|                                         & \verb|S|                          & Fixed-length ASCII string type (1 byte per character); for example, to create astring data type with length 10, use 'S10'   \\                                                                                                                          
         \verb|unicode_|                                        & \verb|U|                          & Fixed-length Unicode type (number of bytes platform specific); same specification semantics as \verb|string_| (e.g., 'U10') \\
         \hline
     \end{tabularx}
@@ -157,7 +157,7 @@ integer can only represent nonnegative integers. For example, int8
 (inclusive), while uint8 (unsigned 8-bit integer) can represent 0
 through 255.}
 
-You can explicitly convert or cast an array from one data type to another using ndarray’s \verb|astype| method:
+You can explicitly convert or cast an array from one data type to another using ndarray's \verb|astype| method:
 \begin{pyc}
 arr = np.array([1, 2, 3, 4, 5])
 print(arr) # [1 2 3 4 5]
@@ -188,7 +188,7 @@ numeric_strings.astype(float)
 
 If casting were to fail for some reason (like a string that cannot be converted to float64), a ValueError will be raised. Before, I was a bit lazy and wrote float instead of np.float64; NumPy aliases the Python types to its own equivalent data types.
 
-You can also use another array’s dtype attribute:
+You can also use another array's dtype attribute:
 \begin{pyc}
 int_array = np.arange(10)
 
@@ -238,7 +238,7 @@ arr
 # array([ 0,  1,  2,  3,  4, 12, 12, 12,  8,  9])
 \end{pyc}
 \notes{
-    An important first distinction from Python’s built-in lists is that \textbf{array slices are views on the original array}. This means that the data is not copied, and any modifications to the view will be reflected in the source array. 
+    An important first distinction from Python's built-in lists is that \textbf{array slices are views on the original array}. This means that the data is not copied, and any modifications to the view will be reflected in the source array. 
 }
 
 \begin{pyc}
@@ -326,7 +326,7 @@ arr2d[:2, 1:] = 0
 arr2d
 \end{pyc}
 \subsection{Boolean Indexing}
-The Boolean array must be of the same length as the array axis it’s indexing. You can even mix and match Boolean arrays with slices or integers (or sequences of integers).
+The Boolean array must be of the same length as the array axis it's indexing. You can even mix and match Boolean arrays with slices or integers (or sequences of integers).
 
 \begin{pyc}
 names = np.array(["Bob", "Joe", "Will", "Bob", "Will", "Joe", "Joe"])
@@ -373,7 +373,7 @@ Use \& (and) and \textbar (or) instead.
 }
 
 \begin{itemize}
-    \item Setting values with Boolean arrays works by substituting the value or values on the righthand side into the locations where the Boolean array’s values are True.
+    \item Setting values with Boolean arrays works by substituting the value or values on the righthand side into the locations where the Boolean array's values are True.
     \item You can also set whole rows or columns using a one-dimensional Boolean array
 \end{itemize}
 
@@ -445,8 +445,8 @@ arr.transpose((2, 0, 1))
 \section{Pseudorandom Number Generation(伪随机数生成)}
 \begin{enumerate}
     \item The \verb|numpy.random| module supplements the built-in Python random module with functions for efficiently generating whole arrays of sample values from many kinds of probability distributions. 
-    \item Python’s built-in \verb|random| module, by contrast, samples only one value at a time. As you can see from this benchmark, \verb|numpy.random| is well over an order of magnitude faster for generating very large samples(要快一个数量级).
-    \item These random numbers are not truly random (rather, pseudorandom) but instead are generated by a configurable random number generator that determines deterministically what values are created. Functions like \verb|numpy.random.standard_normal| use the numpy.random module’s default random number generator, but your code can be configured to use an explicit generator.
+    \item Python's built-in \verb|random| module, by contrast, samples only one value at a time. As you can see from this benchmark, \verb|numpy.random| is well over an order of magnitude faster for generating very large samples(要快一个数量级).
+    \item These random numbers are not truly random (rather, pseudorandom) but instead are generated by a configurable random number generator that determines deterministically what values are created. Functions like \verb|numpy.random.standard_normal| use the numpy.random module's default random number generator, but your code can be configured to use an explicit generator.
     \item The seed argument is what determines the initial state of the generator, and the state changes each time the rng object is used to generate data. The generator object rng is also isolated from other code which might use the numpy.random module. 和随机数种子不一样，每次还是会产生不同的随机数，仅仅是修改一些随机数生成器的配置文件。
 \end{enumerate}
 
@@ -524,7 +524,7 @@ np.add(arr, 1, out=out)
 out
 \end{pyc}
 
-See \autoref{Some unary universal functions} and \autoref{Some unary universal functions} for a listing of some of NumPy’s ufuncs. New ufuncs continue to be added to NumPy, so consulting the online NumPy documentation is the best way to get a comprehensive listing and stay up to date.
+See \autoref{Some unary universal functions} and \autoref{Some unary universal functions} for a listing of some of NumPy's ufuncs. New ufuncs continue to be added to NumPy, so consulting the online NumPy documentation is the best way to get a comprehensive listing and stay up to date.
 
 \begin{table}
     \caption{Some unary universal functions}
@@ -629,7 +629,7 @@ This has multiple problems. First, it will not be very fast for large arrays (be
 result = np.where(cond, xarr, yarr)
 \end{pyc}
 
-The second and third arguments to numpy.where don’t need to be arrays; one or both of them can be scalars. A typical use of where in data analysis is to produce a new array of values based on another array. You can combine scalars and arrays when using numpy.where. 
+The second and third arguments to numpy.where don't need to be arrays; one or both of them can be scalars. A typical use of where in data analysis is to produce a new array of values based on another array. You can combine scalars and arrays when using numpy.where. 
 \begin{pyc}
 arr = rng.standard_normal((4, 4))
 np.where(arr > 0, 2, -2)
@@ -639,6 +639,15 @@ np.where(arr > 0, 2, arr)
 
 \subsection{Mathematical and Statistical Methods}
 A set of mathematical functions that compute statistics about an entire array or about the data along an axis are accessible as methods of the array class. You can use aggregations (sometimes called reductions) like sum, mean, and std (standard deviation) either by calling the array instance method or using the top-level NumPy function. When you use the NumPy function, like numpy.sum, you have to pass the array you want to aggregate as the first argument.
+
+\begin{enumerate}
+    \item Functions like mean and sum take an optional axis argument that computes the statistic over the given axis, resulting in an array with one less dimension. \verb|arr.mean(axis=1)| means “compute mean across the columns,” where \verb|arr.sum(axis=0)| means “compute sum down the rows.” 
+    \item Other methods like cumsum and cumprod do not aggregate, instead producing an array of the intermediate results. In multidimensional arrays, accumulation functions like cumsum return an array of the same size but with the partial aggregates computed along the indicated axis according to each lower dimensional slice
+    \item 
+    \item 
+    \item 
+    \item 
+\end{enumerate}
 \section{Linear Algebra}
 \section{Example: Random Walks}
 \section{Conclusion}
