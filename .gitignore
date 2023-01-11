@@ -16,3 +16,6 @@ _minted-main
 temp.tex
 .npy
 .npz
+Codes/array_archive.npz
+Codes/array_compressed.npz
+Codes/some_array.npy
