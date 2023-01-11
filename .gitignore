@@ -14,3 +14,5 @@
 Tex/main.synctex.gz
 _minted-main
 temp.tex
+.npy
+.npz
