@@ -784,7 +784,57 @@ See \autoref{Array set operations} for a listing of array set operations in NumP
     \end{tabularx}
 \end{table}
 \section{File Input and Output with Arrays}
-NumPy is able to save and load data to and from disk in some text or binary formats.
+NumPy is able to save and load data to and from disk in some text or binary formats. If you prefer pandas and other tools for loading text or tabular data, see \autoref{Data Loading, Storage, and File Formats} for much more.
+
+\begin{enumerate}
+    \item \verb|numpy.save| and \verb|numpy.load| are the two workhorse functions for efficiently saving and loading array data on disk. Arrays are saved by default in an uncompressed raw binary format with file extension \verb|.npy|. If the file path does not already end in .npy, the extension will be appended. The array on disk can then be loaded with numpy.load
+    \item You can save multiple arrays in an uncompressed archive using \verb|numpy.savez| and passing the arrays as keyword arguments
+    \item When loading an .npz file, you get back a dictionary-like object that loads the individual arrays lazily
+    \item If your data compresses well, you may wish to use \verb|numpy.savez_compressed| instead. 
+\end{enumerate}
+
+\begin{pyc}
+arr = np.arange(10)
+
+np.save("some_array", arr)
+np.load("some_array.npy")
+
+np.savez("array_archive.npz", a=arr, b=arr)
+arch = np.load("array_archive.npz")
+arch["b"]
+
+np.savez_compressed("array_compressed.npz", a=arr, b=arr)
+\end{pyc}
 \section{Linear Algebra}
+Linear algebra operations, like matrix multiplication,decompositions, determinants(行列式), and other square matrix math, are an important part of many array libraries.
+\begin{enumerate}
+    \item Multiplying two two-dimensional arrays with $*$ is an element-wise product, while matrix multiplications require using a function. Thus, there is a function \verb|dot|S, both an array method and a function in the numpy namespace, for matrix multiplication. \verb|x.dot(y)| is equivalent to \verb|np.dot(x, y)|.
+    \item numpy.linalg has a standard set of matrix decompositions and things like inverse and determinant
+\end{enumerate}
+
+See \autoref{Commonly used linear algebra functions} for a list of some of the most commonly used linear algebra functions.
+
+\begin{table}
+    \caption{Commonly used linear algebra functions}
+    \label{Commonly used linear algebra functions}
+    \begin{tabularx}{\textwidth}{lX}
+        \hline
+        Functions    & Description                                                                                                                                                \\
+        \hline
+        \verb|diag|  & Return the diagonal (or off-diagonal) elements of a square matrix as a 1D array, or convert a 1D array into a square matrix with zeros on the off-diagonal \\
+        \verb|dot|   & Matrix multiplication                                                                                                                                      \\
+        \verb|trace| & Compute the sum of the diagonal elements                                                                                                                   \\
+        \verb|det|   & Compute the matrix determinant                                                                                                                             \\
+        \verb|eig|   & Compute the eigenvalues and eigenvectors of a square matrix                                                                                                \\
+        \verb|inv|   & Compute the inverse of a square matrix                                                                                                                     \\
+        \verb|pinv|  & Compute the \href{https://en.wikipedia.org/wiki/Moore-Penrose_inverse}{Moore-Penrose pseudoinverse} of a matrix                                                                                                        \\
+        \verb|qr|    & Compute the \href{https://en.wikipedia.org/wiki/QR_decomposition}{QR decomposition}                                                                                                                               \\
+        \verb|svd|   & Compute the \href{https://en.wikipedia.org/wiki/Singular_value_decomposition}{singular value decomposition} (SVD, 奇异值分解)                                                                                                             \\
+        \verb|solve| & Solve the linear system $Ax = b$ for $x$, where $A$ is a square matrix                                                                                     \\
+        \verb|lstsq| & Compute the least-squares solution to $Ax = b$                                                                                                             \\
+        \hline
+    \end{tabularx}
+\end{table}
+
 \section{Example: Random Walks}
 \section{Conclusion}
